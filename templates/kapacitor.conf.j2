@@ -25,15 +25,24 @@ default-retention-policy = "{{ kapacitor_default_retention_policy }}"
 {% endif %}
 
 [http]
-  auth-enabled = {{ kapacitor_http_auth_enabled | to_json }}
   bind-address = "{{ kapacitor_http_bind_address }}"
   https-certificate = "{{ kapacitor_http_https_certificate }}"
   https-enabled = {{ kapacitor_http_https_enabled | to_json }}
   log-enabled = {{ kapacitor_http_log_enabled | to_json }}
   pprof-enabled = {{ kapacitor_http_pprof_enabled | to_json }}
-  shared-secret = "{{ kapacitor_http_shared_secret }}"
-  shutdown-timeout = "{{ kapacitor_http_shutdown_timeout }}"
   write-tracing = {{ kapacitor_http_write_tracing | to_json }}
+
+[config-override]
+  # Enable/Disable the service for overridding configuration via the HTTP API.
+  enabled = true
+
+[load]
+  # Enable/Disable the service for loading tasks/templates/handlers
+  # from a directory
+  enabled = true
+  # Directory where task/template/handler files are set
+  dir = "/etc/kapacitor/load"
+
 
 [replay]
   dir = "{{ kapacitor_replay_dir }}"
@@ -42,6 +51,10 @@ default-retention-policy = "{{ kapacitor_default_retention_policy }}"
   boltdb = "{{ kapacitor_storage_boltdb }}"
 
 [task]
+  # Where to store the tasks database
+  # DEPRECATED: This option is not needed for new installations.
+  # It is only used to determine the location of the task.db file
+  # for migrating to the new `storage` service.
   dir = "{{ kapacitor_task_dir }}"
   snapshot-interval = "{{ kapacitor_task_snapshot_interval }}"
 
@@ -102,6 +115,17 @@ default-retention-policy = "{{ kapacitor_default_retention_policy }}"
   global = {{ kapacitor_pagerduty_global | to_json }}
   service-key = "{{ kapacitor_pagerduty_service_key }}"
   url = "{{ kapacitor_pagerduty_url }}"
+
+#[pagerduty2]
+  # Configure PagerDuty API v2.
+#  enabled = false
+  # Your PagerDuty Service Key.
+#  service-key = ""
+  # The PagerDuty API v2 URL should not need to be changed.
+#  url = "https://events.pagerduty.com/v2/enqueue"
+  # If true the all alerts will be sent to PagerDuty
+  # without explicitly marking them in the TICKscript.
+#  global = false
 
 [pushover]
   enabled = {{ kapacitor_pushover_enabled | to_json }}
@@ -188,4 +212,3 @@ default-retention-policy = "{{ kapacitor_default_retention_policy }}"
   interval = "{{ kapacitor_deadman_interval }}"
   message = "{{ kapacitor_deadman_message }}"
   threshold = {{ kapacitor_deadman_threshold | to_json }}
-

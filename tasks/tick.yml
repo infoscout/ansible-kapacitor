@@ -8,6 +8,7 @@
     - "{{ kapacitor_tick_script_dest_dir }}"
     - "{{ kapacitor_tick_template_dest_dir }}"
     - "{{ kapacitor_tick_var_dest_dir }}"
+    - "{{ kapacitor_tick_topichandlers_dest_dir }}"
   tags: 'kapacitor-tick'
 
 - name: 'Copy Kapacitor TICK script files'
@@ -62,3 +63,20 @@
   tags:
     - 'kapacitor-tick'
     - 'kapacitor-task'
+- name: 'Copy Kapacitor topic-handler files'
+  copy:
+    src:  "{{ item }}"
+    dest: "{{ kapacitor_tick_topichandlers_dest_dir }}"
+  with_fileglob:
+    - "{{ kapacitor_tick_topichandlers_dir }}/*.yaml"
+  tags:
+    - 'kapacitor-tick'
+    - 'kapacitor-topics'
+
+- name: 'Define Kapacitor topic-handlers'
+  shell: "kapacitor define-topic-handler {{ kapacitor_tick_topichandlers_dest_dir }}/{{item}}"
+  with_items:
+    - "{{ kapacitor_topichandlers_enable }}"
+  tags:
+    - 'kapacitor-tick'
+    - 'kapacitor-topics'
