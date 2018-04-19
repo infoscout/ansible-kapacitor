@@ -1,0 +1,6 @@
+topic: test
+id: example-publish-subscribe
+kind: publish
+options:
+  topics:
+    - example
